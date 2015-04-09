@@ -6,10 +6,10 @@ Professional Support / Integration Assistance for this module is available. For 
 
 CAS service registry implementation that uses YAML configuration format.
 
-This library is built on top of [SnakeYAML](https://code.google.com/p/snakeyaml/) and [YAMLTag](https://github.com/xrrocha/yamltag) libraries to create flexible and human-readable
-YAML configuration format for defining rich CAS' `RegisteredService` collection of objects with all their related collaborating objects.
+This library is built on top of [SnakeYAML](https://code.google.com/p/snakeyaml/) and [YAMLTag](https://github.com/xrrocha/yamltag) libraries to create a flexible and human-readable
+YAML configuration format for defining a rich CAS `RegisteredService` collection of objects with all their related collaborating objects.
 
-This library replaces `cas-addons 1.x` JSON ServiceRegistry and serves as an alternative to the new [JSON Service Registry](http://jasig.github.io/cas/development/installation/Service-Management.html#persisting-registered-service-data) which will be available in CAS core version 4.1 which is not yet released.
+This library replaces `cas-addons 1.x` JSON ServiceRegistry and serves as an alternative to the new [JSON Service Registry](http://jasig.github.io/cas/development/installation/Service-Management.html#persisting-registered-service-data) which will be available in CAS core version 4.1, which is not yet released.
 
 ## Current version
 `1.0.0-GA`
@@ -31,7 +31,7 @@ The minimum supported CAS server version is `4.0.0`
   ```
 * ###Define registered services
   
-  Create a file `/etc/cas/servicesRegistry.yml` with services definitions. Example services definitions would look like this:
+  Create a file `/etc/cas/servicesRegistry.yml` with your service definitions. Here are some example service definitions:
 
 ```yaml
 ---
@@ -74,10 +74,7 @@ The minimum supported CAS server version is `4.0.0`
       requiredHandlers: [handler1, handler2]
 ```
 
-  This is YAML format as implemented by SnakeYAML and YAMLTag libraries. Each registered service is represented as a new record within a document
-  and indicated by special yaml tag that is mapped internally to a class type of CAS object that gets instantiated at runtime and collected
-  into a List. Every property defined here (basic or tag representing object type) directly map to a property on the
-  `RegisteredService` type that is being instantiated. Here are the current object tags and their mappings:
+  This is a YAML format implemented with SnakeYAML and YAMLTag libraries. Each registered service is represented as a new record within the document and declared with a special yaml tag that is mapped internally to a CAS class that gets instantiated at runtime and collected into a List. Every property defined here (basic or tag representing object type) directly maps to a property contained within the `RegisteredService` class type that is being instantiated. Here is a list of the current object tags and their mappings:
 
   ```yaml
       !serviceWithAttributes - maps to net.unicon.cas.addon.registeredservices.DefaultRegisteredServiceWithAttributes
@@ -89,13 +86,11 @@ The minimum supported CAS server version is `4.0.0`
       !regexAttributeFilter - maps to org.jasig.cas.services.support.RegisteredServiceRegexAttributeFilter
   ```
 
-  This example: `!defaultAttributeFilter []` instantiates mapped object with the default, no-arg constructor, whereas this one:
-  `!regexAttributeFilter ["https://.+"]` instantiates a corresponding object with one argument constrcutor with the value of the argument
-  in the brakets.
+Within the examples: `!defaultAttributeFilter []` instantiates the mapped class with the default, no-arg constructor, whereas this one: `!regexAttributeFilter ["https://.+"]` instantiates the mapped class with one argument constructor with the value of the argument in the brakets.
 
 * ###Define beans
   
-  Make sure to delete an existing `serviceRegistryDao` bean definition and define the following beans (in `WEB-INF/spring-configuration/serviceRegistry.xml` for example):
+  Make sure to delete any existing `serviceRegistryDao` bean definitions and define the following beans (in `WEB-INF/spring-configuration/serviceRegistry.xml`) For example:
 
 ```xml
   <?xml version="1.0" encoding="UTF-8"?>
@@ -116,22 +111,20 @@ The minimum supported CAS server version is `4.0.0`
     http://unicon.net/schema/cas/spring-resource
     http://unicon.net/schema/cas/cas-addon-spring-resource.xsd">
 
-
-
-
     <cas-reg-svc:disable-default-registered-services-reloading/>
 
     <task:annotation-driven/>
+    
     <cas-resource:change-detector id="yamlServiceRegistryResourceChangeWatcher"
       watched-resource="file:/etc/cas/servicesRegistry.yml"/>
 
       <cas-external:yaml-services-registry/>
 
-    </beans>
+  </beans>
 ```
 
-  Bare `<cas-external:yaml-services-registry/>` definition assumes the yaml configuration file is `/etc/cas/servicesRegistry.yml` by default.
-  This could be changed (if such a need arises) by introducing an additional `config-file` attribute like so:
+  A bare `<cas-external:yaml-services-registry/>` definition assumes the yaml configuration file is `/etc/cas/servicesRegistry.yml` by default.
+  This can be changed (if such a need arises) by introducing an additional `config-file` attribute like so:
 
   ```xml
   <cas-external:yaml-services-registry config-file="file:/opt/my-other-super-registry-definition.yml"/>
